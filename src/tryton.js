@@ -111,11 +111,12 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 
   var setSession = function(_database, _login, _userId, _sessionId) {
     // Set the user and session ID and also save them to cookie store for
-    // retreival
-    $cookieStore.put('database', _database);
-    $cookieStore.put('login', _login);
-    $cookieStore.put('userId', _userId);
-    $cookieStore.put('sessionId', _sessionId);
+    // retreival. Set null if value is undefined; happens when user attempts to
+    // log in to incompatible database.
+    $cookieStore.put('database', _database || null);
+    $cookieStore.put('login', _login || null);
+    $cookieStore.put('userId', _userId || null);
+    $cookieStore.put('sessionId', _sessionId || null);
 
     // Now that everything is stored to cookies, reuse the loadAllFromCookies
     // method to load values into variables here.
@@ -151,7 +152,9 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     var promise = tryton.rpc(
       'common.login', [_username, _password], _database
     ).success(function(result) {
-      if (result) {
+      // Since trytond returns an Array with userId and sessionId on successful
+      // login and an error Object on error; false if bad credentials.
+      if (result instanceof Array) {
         setSession(_database, _username, result[0], result[1]);
       }
     });
