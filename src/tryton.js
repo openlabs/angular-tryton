@@ -190,7 +190,9 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     doLogin: doLogin,
     doLogout: doLogout,
     rpc: rpc,
-    setSession: setSession
+    setSession: setSession,
+    database: database,
+    sessionId: sessionId
   };
 
 }]);

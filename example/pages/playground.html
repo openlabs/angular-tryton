@@ -1,0 +1,69 @@
+<div ng-controller='PlaygroundCtrl'>	
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Request</h3>
+      </div>
+      <div class="panel-body">
+        <tabset>
+          <tab heading="Method and Parameters">
+            <div class="tab-content">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <label for="type">Type</label>
+                  <select ng-model="request.type" class="form-control" ng-options="name for name in ['model', 'wizard', 'report', 'common']" required>
+                  </select>
+                </div>
+                <div class="form-group" ng-if="type != 'common'">
+                  <label for="model">model</label>
+                  <input type="text" class="form-control" id="model" ng-model="request.model" placeholder="Eg. party.party">
+                </div>
+                <div class="form-group">
+                  <label for="method">method</label>
+                  <input type="text" class="form-control" id="method" ng-model="request.method" placeholder="Eg. search">
+                </div>
+                <div class="form-group has-feedback" ng-class="{'has-error': paramsHasError, 'has-success': !paramsHasError}">
+                  <label class="control-label" for="params">Parameters (json)</label>
+                  <input type="text" class="form-control" id="params" ng-model="request.params" ng-change="validateParams()"
+                    placeholder="[('name', 'ilike', '%apple%')], 10">
+                  <span class="glyphicon glyphicon-ok form-control-feedback" ng-if="!paramsHasError"></span>
+                  <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="paramsHasError"></span>
+                  <span class="help-block" ng-if="paramsError">{{ paramsError }}</span>
+                </div>
+                <button type="button" class="btn btn-info" ng-disabled="paramsError || contextError" ng-click="makeRequest()">Go!</button>
+              </form>
+            </div>
+          </tab>
+          <tab heading="Context">
+            <div class="tab-content">
+              <form class="form-horizontal" role="form">
+                <div class="form-group has-feedback" ng-class="{'has-error': contextHasError, 'has-success': !contextHasError}">
+                  <label  class="control-label" for="context">Context (json)</label>
+                  <textarea ng-model="request.context" class="form-control" ng-change="validateContext()">
+                  </textarea>
+                  <span class="glyphicon glyphicon-ok form-control-feedback" ng-if="!contextHasError"></span>
+                  <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="contextHasError"></span>
+                  <span class="help-block" ng-if="paramsError">{{ contextError }}</span>                  
+                </div>
+              </form>
+            </div>
+          </tab>
+        </tabset>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Response</h3>
+      </div>
+      <div class="panel-body">
+        <accordion close-others="oneAtATime">
+          <accordion-group heading="Request: {{ response.method }}" is-open="$first" ng-repeat="response in responses">
+            <pre>&gt;&gt;&gt; params = {{ response.params }}
+&gt;&gt;&gt; context = {{ response.context }}</pre>
+            <pre>{{ response.data }}</pre>
+          </accordion-group>
+        </accordion>
+      </div>
+    </div>
+</div>

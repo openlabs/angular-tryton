@@ -5,9 +5,9 @@
 
 'use strict';
 
-angular.module('myApp', ['ngRoute',	'openlabs.angular-tryton'])
+angular.module('myApp', ['ngRoute',	'openlabs.angular-tryton', 'ui.bootstrap'])
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider
-    .when('/home', {templateUrl: 'pages/home/home.html'})
-    .otherwise({redirectTo: '/home'});
+    .when('/playground', {templateUrl: 'pages/playground.html'})
+    .otherwise({redirectTo: '/playground'});
 }]);
