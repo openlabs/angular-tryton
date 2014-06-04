@@ -11,10 +11,31 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 .config(['$httpProvider', function($httpProvider) {
   // Intercept all responses and check if the response received has an error
   // property which tryton uses to send errors the server handled.
-  var trytonResponseInterceptor = ['$q', function($q) {
+  var trytonResponseInterceptor = ['$q', '$rootScope', function($q, $rootScope) {
     function success(response) {
-      // Handle the cases where the response is an error
-      return response || $q.when(response);
+      if (response.data.__error__) {
+        // Handle the cases where the response is an error.
+        // The __error__ attribute is set by the response Transformer
+        var error = angular.copy(response.data);
+        if (error[0] == 'NotLogged') {
+          $rootScope.$broadcast('tryton:NotLogged');
+        } else if (error[0] == 'UserError') {
+          $rootScope.$broadcast('tryton:UserError', error[1], error[2]);
+        } else if (error[0] == 'UserWarning') {
+          $rootScope.$broadcast('tryton:UserWarning', error[1], error[2], error[3]);
+        } else if (error[0] == 'ConcurrencyException') {
+          $rootScope.$broadcast('tryton:ConcurrencyException', error[1]);
+        } else {
+          // An exception that was not one of the above types. Usually an
+          // error model and a stack trace are returned. the returned error
+          // array is passed as such to the broadcast.
+          $rootScope.$broadcast('tryton:Exception', error);
+        }
+        // Finally reject the promise with the response itself
+        return $q.reject(response);
+      } else {
+        return response || $q.when(response);
+      }
     }
     function error(response) {
       // TODO: Handle all cases of HTTP error here.
@@ -32,6 +53,10 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   var trytonResponseTransformer = function(response, headerGetter) {
     if (response.hasOwnProperty('result')) {
       return response.result;
+    } else if (response.hasOwnProperty('error')) {
+      var error = response.error;
+      error['__error__'] = true;
+      return error;
     }
     return response;
   };
