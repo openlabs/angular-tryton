@@ -5,19 +5,97 @@
 
     <title>angular-tryton</title>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <style>
+      .tab-content {
+        padding: 10px;
+      }
+    </style>
+
 </head>
 <body>
-	<div ng-view></div>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Angular Tryton</a>
+      </div>
+    </div>
+  </nav>
+  <div class="row-fluid">
+    <div class="col-lg-8 col-md-8">
+      <div ng-view></div>
+    </div>
+    <div class="col-lg-4 col-md-4" ng-controller='LoginCtrl'>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-info">
+          <h4 class="list-group-item-heading">Server Information</h4>
+        </li>
+        <li class="list-group-item">
+          Tryton server version: <span class="badge">{{ version }}</span>
+        </li>
+        <li class="list-group-item">Language:
+          <select ng-model="serverInfo.language" ng-options="value[0] as value[1] for value in languages" class="pull-right" required>
+          </select>
+        </li>
+        <li class="list-group-item">Database:
+          <select ng-model="serverInfo.database" ng-options="value for value in databases" class="pull-right" required>
+          </select>
+        </li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-info">
+          <h4 class="list-group-item-heading">Session</h4>
+        </li>
+        <li class="list-group-item" ng-if="serverInfo.sessionId">
+          Session ID: {{ serverInfo.sessionId }}
+          <a class="btn btn-default btn-small " ng-click="logout()">Logout</a>
+        </li>
+        <li class="list-group-item" ng-hide="serverInfo.sessionId">
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" ng-model="login.username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" ng-model="login.password" placeholder="Password">
+          </div>
+          <a class="btn btn-info" ng-click="doLogin()">Login</a>
+        </li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-info">
+          <h4 class="list-group-item-heading">Events</h4>
+        </li>
+        <li class="list-group-item" style="max-height: 400px; overflow: scroll">
+          <table class="table table-hover">
+            <tr ng-repeat="event in events">
+              <td>{{ event.name }}</td>
+            </tr>
+        </table>
+      </li>
+     </ul>
+    <div>
+  </div>
 
 	<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
 	<script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
 	<script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.min.js"></script>
+	<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+	<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 	
 	<script type="text/javascript" src="../src/tryton.js"></script>
 	<!--<script type="text/javascript" src="tryton.min.js"></script>-->
 	
 	<script type="text/javascript" src="app.js"></script>
+	<script type="text/javascript" src="loginCtrl.js"></script>
+	<script type="text/javascript" src="playgroundCtrl.js"></script>
 	
 	<script type="text/javascript" src="pages/home/HomeCtrl.js"></script>
+
 </body>
 </html>

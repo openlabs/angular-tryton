@@ -42,7 +42,7 @@ describe('angular-tryton', function() {
       });
 
       $httpBackend.flush(); // flush requests
-    });    
+    });
 
     it('should not mess with non-tryton responses like views', function() {
       var rv = 'just another string response';
@@ -66,7 +66,118 @@ describe('angular-tryton', function() {
       
       $httpBackend.flush(); // flush requests
     });
+
+    it('should reject promises when server responds with error', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'notlogged', params: []}
+        ).respond(200, {id: 0, error: ['NotLogged']});
+
+      tryton.rpc('notlogged', [])
+      .error(function(data) {
+        expect(data[0]).toBe('NotLogged');
+      });
+
+      $httpBackend.flush(); // flush requests
+    });
     
+    afterEach(function() {
+      $httpBackend.verifyNoOutstandingExpectation();
+      $httpBackend.verifyNoOutstandingRequest();
+    });
+  });
+
+  // Test the events broadcasted when tryton sends an error
+  describe('events', function() {
+    var $httpBackend, tryton, scope;
+    var eventCallbacks = {
+      'NotLogged': function() {},
+      'UserError': function() {},
+      'UserWarning': function() {},
+      'ConcurrencyException': function() {},
+      'Exception': function() {}
+    };
+    beforeEach(inject(function(_$httpBackend_, _$rootScope_, _tryton_) {
+      $httpBackend = _$httpBackend_;
+      tryton = _tryton_;
+      scope = _$rootScope_;
+    }));
+
+    it('should broadcast NotLogged when not logged', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'notlogged', params: []}
+        ).respond(200, {id: 0, error: ['NotLogged']});
+
+      spyOn(eventCallbacks, 'NotLogged');
+      scope.$on('tryton:NotLogged', eventCallbacks.NotLogged);
+
+      tryton.rpc('notlogged', []).then(function() {
+        expect(eventCallbacks.NotLogged).toHaveBeenCalled();
+      });
+
+      $httpBackend.flush(); // flush requests
+    });
+
+    it('should broadcast UserError when it happens', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'usererror', params: []}
+        ).respond(200, {id: 0, error: ['UserError', 'message', 'description']});
+
+      spyOn(eventCallbacks, 'UserError');
+      scope.$on('tryton:UserError', eventCallbacks.UserError);
+
+      tryton.rpc('usererror', []).then(function() {
+        expect(eventCallbacks.UserError).toHaveBeenCalled();
+      });
+
+      $httpBackend.flush(); // flush requests
+    });
+
+    it('should broadcast UserWarning when it happens', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'userwarning', params: []}
+        ).respond(200, {id: 0, error: ['UserWarning', 'name', 'messsage', 'description']});
+
+      spyOn(eventCallbacks, 'UserWarning');
+      scope.$on('tryton:UserWarning', eventCallbacks.UserWarning);
+
+      tryton.rpc('userwarning', []).then(function() {
+        expect(eventCallbacks.UserWarning).toHaveBeenCalled();
+      });
+
+      $httpBackend.flush(); // flush requests
+    });
+
+    it('should broadcast ConcurrencyException when it happens', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'concurrencyexception', params: []}
+        ).respond(200, {id: 0, error: ['ConcurrencyException', 'message']});
+
+      spyOn(eventCallbacks, 'ConcurrencyException');
+      scope.$on('tryton:ConcurrencyException', eventCallbacks.ConcurrencyException);
+
+      tryton.rpc('concurrencyexception', []).then(function() {
+        expect(eventCallbacks.ConcurrencyException).toHaveBeenCalled();
+      });
+
+      $httpBackend.flush(); // flush requests
+    });
+
+    it('should broadcast Exception when it happens', function() {
+      $httpBackend.expectPOST(
+        '/', {method: 'exception', params: []}
+        ).respond(200, {id: 0, error: ['', 'message']});
+
+      spyOn(eventCallbacks, 'Exception');
+      scope.$on('tryton:Exception', eventCallbacks.Exception);
+
+      tryton.rpc('exception', [])
+        .then(function() {
+          expect(eventCallbacks.Exception).toHaveBeenCalled();
+        });
+
+      $httpBackend.flush(); // flush requests
+    });
+
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
@@ -139,7 +250,6 @@ describe('angular-tryton', function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
     });
-
 
   });
 });

@@ -20,7 +20,8 @@
   "dependencies": {
     "angular": "~1.2.0",
     "angular-cookies": "~1.2.16",
-    "angular-route": "~1.2.16"
+    "angular-route": "~1.2.16",
+    "angular-bootstrap": "~0.11.0"
   },
   "devDependencies": {}
 }
