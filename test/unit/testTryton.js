@@ -42,7 +42,7 @@ describe('angular-tryton', function() {
       });
 
       $httpBackend.flush(); // flush requests
-    });    
+    });
 
     it('should not mess with non-tryton responses like views', function() {
       var rv = 'just another string response';
@@ -250,7 +250,6 @@ describe('angular-tryton', function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
     });
-
 
   });
 });
