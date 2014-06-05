@@ -79,6 +79,18 @@ describe('angular-tryton', function() {
 
       $httpBackend.flush(); // flush requests
     });
+
+    it('should be possible to change the server base url', function() {
+      $httpBackend.expectPOST(
+        'http://erp.openlabs.us/',
+        {"method":"hello.world","params":[]})
+        .respond(200, {id: 0, result: "Hello World"});
+
+      tryton.setServerUrl('http://erp.openlabs.us/');
+      tryton.rpc('hello.world');
+
+      $httpBackend.flush(); // flush requests
+    });
     
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
