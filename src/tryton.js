@@ -65,6 +65,12 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 .factory('tryton', ['$http', function ($http) {
   var serverUrl = '/';
 
+  // Change this URL using setServerUrl
+  var setServerUrl = function(url) {
+    serverUrl = url;
+  };
+
+
   // The lowest level RPC calling methanism which calls the given
   // database url over http with the method and parameters.
   var rpc = function(method, params, database) {
@@ -85,7 +91,8 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 
 	var self = {
     rpc: rpc,
-    getServerVersion: getServerVersion
+    getServerVersion: getServerVersion,
+    setServerUrl: setServerUrl
 	};
 	return self;
 }])
