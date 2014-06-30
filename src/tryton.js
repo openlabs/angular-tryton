@@ -13,7 +13,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   // property which tryton uses to send errors the server handled.
   var trytonResponseInterceptor = ['$q', '$rootScope', function($q, $rootScope) {
     function success(response) {
-      if (response.data.__error__) {
+      if (response.data && response.data.__error__) {
         // Handle the cases where the response is an error.
         // The __error__ attribute is set by the response Transformer
         var error = angular.copy(response.data);
