@@ -220,6 +220,7 @@ describe('angular-tryton', function() {
 
       session.doLogin('database', 'admin', 'admin').success(function(result) {
         expect(result).toEqual([1, 'session']);
+        expect(session.isLoggedIn()).toBe(true);
         session.rpc('test', ['hello']);
       });
       $httpBackend.flush(); // flush requests
@@ -258,9 +259,46 @@ describe('angular-tryton', function() {
       $httpBackend.flush(); // flush requests
     });
 
+    it('set default session in context', function() {
+      session.setDefaultContext({'user': 1});
+      expect(angular.toJson($cookieStore.get('context'))).toBe(angular.toJson({'user': 1}));
+    });
+
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
+    });
+
+  });
+
+  describe('Filter: urlTryton', function () {
+
+    var $httpBackend, tryton, session, $cookieStore, urlTryton;
+
+    beforeEach(inject(function(_$httpBackend_, _$cookieStore_, $filter, _tryton_, _session_) {
+      $httpBackend = _$httpBackend_;
+      $cookieStore = _$cookieStore_;
+      tryton = _tryton_;
+      session = _session_;
+      urlTryton = $filter('urlTryton');
+    }));
+
+    it('should map url from localhost', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party$/);
+      expect(urlTryton('party.party', 2)).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party\/2$/);
+      expect(urlTryton('party.party', 2, 'wizard')).toMatch(/^tryton:\/\/localhost:\d+\/database\/wizard\/party\.party\/2$/);
+    });
+
+    it('should map url from remote', function () {
+      tryton.setServerUrl('http://tryton.openlabs.us/');
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/tryton\.openlabs\.us\/database\/model\/party\.party$/);
+    });
+
+    it('should not return url', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton()).toBe('');
     });
 
   });

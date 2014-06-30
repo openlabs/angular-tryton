@@ -13,7 +13,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   // property which tryton uses to send errors the server handled.
   var trytonResponseInterceptor = ['$q', '$rootScope', function($q, $rootScope) {
     function success(response) {
-      if (response.data.__error__) {
+      if (response.data && response.data.__error__) {
         // Handle the cases where the response is an error.
         // The __error__ attribute is set by the response Transformer
         var error = angular.copy(response.data);
@@ -62,20 +62,23 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   };
   $httpProvider.defaults.transformResponse.push(trytonResponseTransformer);
 }])
-.factory('tryton', ['$http', function ($http) {
-  var serverUrl = '/';
+.service('tryton', ['$http', function ($http) {
+  var tryton = this;
+
+  this.serverUrl = '/';
 
   // Change this URL using setServerUrl
-  var setServerUrl = function(url) {
-    serverUrl = url;
+  this.setServerUrl = function(url) {
+    console.log('WARN: Method tryton.setServerUrl() will be depreciated in next version.');
+    tryton.serverUrl = url;
   };
 
 
   // The lowest level RPC calling methanism which calls the given
   // database url over http with the method and parameters.
-  var rpc = function(method, params, database) {
+  this.rpc = function(method, params, database) {
     var request = $http.post(
-      serverUrl + (database || ''),
+      tryton.serverUrl + (database || ''),
       {
         'method': method,
         'params': params || []
@@ -85,32 +88,28 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   };
 
   // Get the server's version by calling rpc method
-  var getServerVersion = function() {
-    return rpc('common.version', [null, null]);
+  this.getServerVersion = function() {
+    return tryton.rpc('common.version', [null, null]);
   };
 
-	var self = {
-    rpc: rpc,
-    getServerVersion: getServerVersion,
-    setServerUrl: setServerUrl
-	};
-	return self;
 }])
-.factory('session', ['tryton', '$cookieStore', function(tryton, $cookieStore) {
+.service('session', ['tryton', '$cookieStore', function(tryton, $cookieStore) {
   // Controller for managing tryton session
 
+  var session = this;
+
   // The Integer ID of the currently logged in User
-  var userId = null;
+  this.userId = null;
 
   // The Session ID of the current session (issued by tryton server)
-  var sessionId = null;
+  this.sessionId = null;
 
   // The database to which this session connects to
-  var database = null;
+  this.database = null;
 
   // The login/username used to connect to tryton. This has to be remembered
   // for just asking for the password when a session times out.
-  var login = null;
+  this.login = null;
 
   // The context object of the session. This is the default context from the
   // preferences of the logged in user.
@@ -118,10 +117,10 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 
   var loadAllFromCookies = function() {
     // Load the values of the variables from the cookiestore.
-    userId = $cookieStore.get('userId');
-    sessionId = $cookieStore.get('sessionId');
-    database = $cookieStore.get('database');
-    login = $cookieStore.get('login');
+    session.userId = $cookieStore.get('userId');
+    session.sessionId = $cookieStore.get('sessionId');
+    session.database = $cookieStore.get('database');
+    session.login = $cookieStore.get('login');
     context = $cookieStore.get('context');
   };
 
@@ -131,8 +130,8 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 
   var clearSession = function() {
     // Clear the session for a brand new connection
-    userId = null;
-    sessionId = null;
+    session.userId = null;
+    session.sessionId = null;
     context = null;
 
     // Now remove the values from the cookie store
@@ -141,7 +140,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     $cookieStore.remove('context');
   };
 
-  var setSession = function(_database, _login, _userId, _sessionId) {
+  this.setSession = function(_database, _login, _userId, _sessionId) {
     // Set the user and session ID and also save them to cookie store for
     // retreival. Set null if value is undefined; happens when user attempts to
     // log in to incompatible database.
@@ -155,12 +154,12 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     loadAllFromCookies();
   };
 
-  var rpc = function(_method, _params, _context) {
+  this.rpc = function(_method, _params, _context) {
     // Make a remote procedure call to tryton with the current user ID
     // session and the database in the session
 
     // Construct parameters: [userId, sessionId, param1, param2,... context]
-    var params = [userId, sessionId].concat((_params || []));
+    var params = [session.userId, session.sessionId].concat((_params || []));
 
     var requestContext = angular.copy((context || {}));
     if (_context !== undefined) {
@@ -168,17 +167,22 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     }
     params.push(requestContext);
 
-    return tryton.rpc(_method, params, database);
+    return tryton.rpc(_method, params, session.database);
   };
 
-  var doLogout = function() {
-    var promise = rpc('common.db.logout');
+  this.doLogout = function() {
+    var promise = session.rpc('common.db.logout');
     // Clean logout of the user
     clearSession();
     return promise;
   };
 
-  var doLogin = function(_database, _username, _password) {
+  this.setDefaultContext = function (_context) {
+    $cookieStore.put('context', _context || null);
+    loadAllFromCookies();
+  };
+
+  this.doLogin = function(_database, _username, _password) {
     // call login on tryton server and if the login is succesful set the
     // userId and session
     var promise = tryton.rpc(
@@ -187,19 +191,39 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
       // Since trytond returns an Array with userId and sessionId on successful
       // login and an error Object on error; false if bad credentials.
       if (result instanceof Array) {
-        setSession(_database, _username, result[0], result[1]);
+        session.setSession(_database, _username, result[0], result[1]);
       }
     });
     return promise;
   };
 
-  return {
-    doLogin: doLogin,
-    doLogout: doLogout,
-    rpc: rpc,
-    setSession: setSession,
-    database: database,
-    sessionId: sessionId
-  };
+  this.isLoggedIn = function () {
+    return !!session.sessionId;
+  }
 
-}]);
+}])
+.filter('urlTryton', function ($window, tryton, session) {
+  return function (name, id, type_) {
+    type_ = type_ || 'model';
+    if (!name) {
+      return;
+    }
+    var values = [];
+    var serverUrl = tryton.serverUrl;
+    if (/^[\w]+:\/\//.test(serverUrl)) {
+      // Check if url has protocol attached
+      serverUrl = serverUrl.substring(serverUrl.indexOf(':'));
+    }
+    else {
+      // Set server url as current host
+      serverUrl = '://' + window.location.host + serverUrl;
+    }
+    values.push(serverUrl + session.database);
+    values.push(type_);
+    values.push(name);
+    if (id) {
+      values.push(id);
+    }
+    return 'tryton' + values.join('/');
+  };
+});
