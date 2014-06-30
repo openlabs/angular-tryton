@@ -206,7 +206,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   return function (name, id, type_) {
     type_ = type_ || 'model';
     if (!name) {
-      return;
+      throw new Error("Name in urlTryton filter is required.");
     }
     var values = [];
     var serverUrl = tryton.serverUrl;

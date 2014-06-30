@@ -298,7 +298,9 @@ describe('angular-tryton', function() {
 
     it('should not return url', function () {
       session.setSession('database', 'admin', 1, 'session');
-      expect(urlTryton()).toBe('');
+      expect(function () {
+        urlTryton();
+      }).toThrow(new Error("Name in urlTryton filter is required."));
     });
 
   });
