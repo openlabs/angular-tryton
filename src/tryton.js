@@ -177,6 +177,11 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     return promise;
   };
 
+  this.setDefaultContext = function (_context) {
+    $cookieStore.put('context', _context || null);
+    loadAllFromCookies();
+  };
+
   this.doLogin = function(_database, _username, _password) {
     // call login on tryton server and if the login is succesful set the
     // userId and session
@@ -192,5 +197,8 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     return promise;
   };
 
+  this.isLoggedIn = function () {
+    return !!session.sessionId;
+  }
 
 }]);

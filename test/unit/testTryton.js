@@ -220,6 +220,7 @@ describe('angular-tryton', function() {
 
       session.doLogin('database', 'admin', 'admin').success(function(result) {
         expect(result).toEqual([1, 'session']);
+        expect(session.isLoggedIn()).toBe(true);
         session.rpc('test', ['hello']);
       });
       $httpBackend.flush(); // flush requests
@@ -256,6 +257,11 @@ describe('angular-tryton', function() {
       expect($cookieStore.get('userId')).toBeUndefined();
 
       $httpBackend.flush(); // flush requests
+    });
+
+    it('set default session in context', function() {
+      session.setDefaultContext({'user': 1});
+      expect(angular.toJson($cookieStore.get('context'))).toBe(angular.toJson({'user': 1}));
     });
 
     afterEach(function() {
