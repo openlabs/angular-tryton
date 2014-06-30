@@ -201,4 +201,29 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     return !!session.sessionId;
   }
 
-}]);
+}])
+.filter('urlTryton', function ($window, tryton, session) {
+  return function (name, id, type_) {
+    type_ = type_ || 'model';
+    if (!name) {
+      return;
+    }
+    var values = [];
+    var serverUrl = tryton.serverUrl;
+    if (/^[\w]+:\/\//.test(serverUrl)) {
+      // Check if url has protocol attached
+      serverUrl = serverUrl.substring(serverUrl.indexOf(':'));
+    }
+    else {
+      // Set server url as current host
+      serverUrl = '://' + window.location.host + serverUrl;
+    }
+    values.push(serverUrl + session.database);
+    values.push(type_);
+    values.push(name);
+    if (id) {
+      values.push(id);
+    }
+    return 'tryton' + values.join('/');
+  };
+});

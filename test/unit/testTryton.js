@@ -270,4 +270,36 @@ describe('angular-tryton', function() {
     });
 
   });
+
+  describe('Filter: urlTryton', function () {
+
+    var $httpBackend, tryton, session, $cookieStore, urlTryton;
+
+    beforeEach(inject(function(_$httpBackend_, _$cookieStore_, $filter, _tryton_, _session_) {
+      $httpBackend = _$httpBackend_;
+      $cookieStore = _$cookieStore_;
+      tryton = _tryton_;
+      session = _session_;
+      urlTryton = $filter('urlTryton');
+    }));
+
+    it('should map url from localhost', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party$/);
+      expect(urlTryton('party.party', 2)).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party\/2$/);
+      expect(urlTryton('party.party', 2, 'wizard')).toMatch(/^tryton:\/\/localhost:\d+\/database\/wizard\/party\.party\/2$/);
+    });
+
+    it('should map url from remote', function () {
+      tryton.setServerUrl('http://tryton.openlabs.us/');
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/tryton\.openlabs\.us\/database\/model\/party\.party$/);
+    });
+
+    it('should not return url', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton()).toBe('');
+    });
+
+  });
 });
