@@ -7,11 +7,11 @@ angular.module('myApp').controller('LoginCtrl', [
   '$scope', 
   'tryton', 
   'session', 
-  '$cookies',
+  '$sessionStorage',
   '$rootScope',
-  function($scope, tryton, session, $cookies, $rootScope) {
+  function($scope, tryton, session, $sessionStorage, $rootScope) {
     $scope.serverInfo = {
-      language: $cookies.language,
+      language: $sessionStorage.language,
       database: session.database,
       sessionId: session.sessionId,
     };
@@ -56,7 +56,7 @@ angular.module('myApp').controller('LoginCtrl', [
       $scope.databases = response;
     });
     $scope.doLogin = function() {
-      $cookies.language = $scope.serverInfo.language;
+      $sessionStorage.language = $scope.serverInfo.language;
       session.doLogin($scope.serverInfo.database, $scope.login.username, $scope.login.password)
         .success(function(data){
           $scope.serverInfo.sessionId = data[1];
