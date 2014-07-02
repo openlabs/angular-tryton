@@ -198,11 +198,12 @@ describe('angular-tryton', function() {
 
   // Test the session functionality
   describe('session', function() {
-    var $httpBackend, tryton, session, $cookieStore;
+    var $httpBackend, tryton, session, $localStorage, $sessionStorage;
 
-    beforeEach(inject(function(_$httpBackend_, _$cookieStore_, _tryton_, _session_) {
+    beforeEach(inject(function(_$httpBackend_, _$localStorage_, _$sessionStorage_, _tryton_, _session_) {
       $httpBackend = _$httpBackend_;
-      $cookieStore = _$cookieStore_;
+      $localStorage = _$localStorage_;
+      $sessionStorage = _$sessionStorage_;
       tryton = _tryton_;
       session = _session_;
     }));
@@ -245,23 +246,23 @@ describe('angular-tryton', function() {
         ).respond(200, {id: 0, result: 'ok'});
 
       session.setSession('database', 'admin', 1, 'session');
-      expect($cookieStore.get('sessionId')).toBe('session');
-      expect($cookieStore.get('userId')).toBe(1);
-      expect($cookieStore.get('database')).toBe('database');
-      expect($cookieStore.get('login')).toBe('admin');
+      expect($sessionStorage.sessionId).toBe('session');
+      expect($localStorage.userId).toBe(1);
+      expect($localStorage.database).toBe('database');
+      expect($localStorage.login).toBe('admin');
 
       spyOn(session, 'doLogout').andCallThrough();
       session.doLogout();
 
-      expect($cookieStore.get('sessionId')).toBeUndefined();
-      expect($cookieStore.get('userId')).toBeUndefined();
+      expect($localStorage.sessionId).toBeUndefined();
+      expect($localStorage.userId).toBeUndefined();
 
       $httpBackend.flush(); // flush requests
     });
 
     it('set default session in context', function() {
       session.setDefaultContext({'user': 1});
-      expect(angular.toJson($cookieStore.get('context'))).toBe(angular.toJson({'user': 1}));
+      expect(angular.toJson($sessionStorage.context)).toBe(angular.toJson({'user': 1}));
     });
 
     afterEach(function() {
@@ -273,11 +274,11 @@ describe('angular-tryton', function() {
 
   describe('Filter: urlTryton', function () {
 
-    var $httpBackend, tryton, session, $cookieStore, urlTryton;
+    var $httpBackend, tryton, session, $localStorage, urlTryton;
 
-    beforeEach(inject(function(_$httpBackend_, _$cookieStore_, $filter, _tryton_, _session_) {
+    beforeEach(inject(function(_$httpBackend_, _$localStorage_, $filter, _tryton_, _session_) {
       $httpBackend = _$httpBackend_;
-      $cookieStore = _$cookieStore_;
+      $localStorage = _$localStorage_;
       tryton = _tryton_;
       session = _session_;
       urlTryton = $filter('urlTryton');

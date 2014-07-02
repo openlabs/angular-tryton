@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/angular-cookies/angular-cookies.js',
+      'bower_components/ngstorage/ngStorage.min.js',
       'test/**/*.js',
       'src/tryton.js'
     ],
