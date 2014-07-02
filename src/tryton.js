@@ -7,7 +7,7 @@
 
 'use strict';
 
-angular.module('openlabs.angular-tryton', ['ngCookies'])
+angular.module('openlabs.angular-tryton', ['ngStorage'])
 .config(['$httpProvider', function($httpProvider) {
   // Intercept all responses and check if the response received has an error
   // property which tryton uses to send errors the server handled.
@@ -93,7 +93,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   };
 
 }])
-.service('session', ['tryton', '$cookieStore', function(tryton, $cookieStore) {
+.service('session', ['tryton', '$localStorage', '$sessionStorage', function(tryton, $localStorage, $sessionStorage) {
   // Controller for managing tryton session
 
   var session = this;
@@ -117,11 +117,11 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
 
   var loadAllFromCookies = function() {
     // Load the values of the variables from the cookiestore.
-    session.userId = $cookieStore.get('userId');
-    session.sessionId = $cookieStore.get('sessionId');
-    session.database = $cookieStore.get('database');
-    session.login = $cookieStore.get('login');
-    context = $cookieStore.get('context');
+    session.userId = $localStorage.userId;
+    session.sessionId = $sessionStorage.sessionId;
+    session.database = $localStorage.database;
+    session.login = $localStorage.login;
+    context = $sessionStorage.context;
   };
 
   // Since the service is a singleton, on the first run just load whatever
@@ -135,19 +135,19 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
     context = null;
 
     // Now remove the values from the cookie store
-    $cookieStore.remove('userId');
-    $cookieStore.remove('sessionId');
-    $cookieStore.remove('context');
+    delete $localStorage.userId;
+    delete $sessionStorage.sessionId;
+    delete $sessionStorage.context;
   };
 
   this.setSession = function(_database, _login, _userId, _sessionId) {
     // Set the user and session ID and also save them to cookie store for
     // retreival. Set null if value is undefined; happens when user attempts to
     // log in to incompatible database.
-    $cookieStore.put('database', _database || null);
-    $cookieStore.put('login', _login || null);
-    $cookieStore.put('userId', _userId || null);
-    $cookieStore.put('sessionId', _sessionId || null);
+    $localStorage.database = _database || null;
+    $localStorage.login = _login || null;
+    $localStorage.userId = _userId || null;
+    $sessionStorage.sessionId = _sessionId || null;
 
     // Now that everything is stored to cookies, reuse the loadAllFromCookies
     // method to load values into variables here.
@@ -178,7 +178,7 @@ angular.module('openlabs.angular-tryton', ['ngCookies'])
   };
 
   this.setDefaultContext = function (_context) {
-    $cookieStore.put('context', _context || null);
+    $sessionStorage.context = _context || null;
     loadAllFromCookies();
   };
 
