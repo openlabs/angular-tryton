@@ -69,7 +69,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
 
   // Change this URL using setServerUrl
   this.setServerUrl = function(url) {
-    console.log('WARN: Method tryton.setServerUrl() will be depreciated in next version.');
+    console.warn('Method tryton.setServerUrl() will be depreciated in next version.');
     tryton.serverUrl = url;
   };
 
