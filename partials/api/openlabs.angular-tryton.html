@@ -1,0 +1,31 @@
+<h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><div class="openlabs-angular-tryton-page"><p>An <a href="https://github.com/angular/angular.js">AngularJS</a> module that makes
+tryton JSONRPC working in the <em>Angular Way</em>. Contains two services <code>tryton</code>,
+<code>session</code> and one filter <code>urlTryton</code>.</p>
+<h2 id="-install"> Install</h2>
+<pre><code class="lang-bash">bower install angular-tryton</code></pre>
+<h2 id="usage">Usage</h2>
+<h4 id="usage_require-and-inject-the-services">Require <code>openlabs.angular-tryton</code> and Inject the Services</h4>
+<pre><code class="lang-js">angular.module(&#39;app&#39;, [
+    &#39;openlabs.angular-tryton&#39;
+]).controller(&#39;Ctrl&#39;, function(
+  $scope,
+  tryton,
+  session
+){});</code></pre>
+<h3 id="usage_how-to-contribute">How to contribute</h3>
+<p>If you&#39;re still convinced that angular-tryton needs to be modified in order to handle your problem and you have an idea on how to do that, well here&#39;s how to turn that idea into a commit (or two) in easy steps:</p>
+<ol>
+<li><p><a href="http://github.com/openlabs/angular-tryton">Fork Angular Tryton</a> into your very own GitHub repository</p>
+</li>
+<li><p>Install git pre-commit hook <code>cp .hooks/pre-commit.sh .git/hooks/pre-commit</code></p>
+</li>
+<li><p>Modify code as required.</p>
+</li>
+<li><p>Once you&#39;re satisfied with the changes and you want the rest of the Angular Tryton developers to take a look at them, push your changes back to your own repository and send us a Pull request to develop branch. Don&#39;t forget to add test with minimum 100% test coverage.</p>
+</li>
+</ol>
+</div></div>

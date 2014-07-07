@@ -5,6 +5,15 @@ NG_DOCS={
   "pages": [
     {
       "section": "api",
+      "id": "openlabs.angular-tryton",
+      "shortName": "openlabs.angular-tryton",
+      "type": "overview",
+      "moduleName": "openlabs.angular-tryton",
+      "shortDescription": "An AngularJS module that makes",
+      "keywords": "$scope add angular angular-tryton api app bash bower branch changes code commit contribute controller convinced coverage cp ctrl develop developers don easy filter forget function git github handle hook hooks idea inject install js jsonrpc minimum modified modify module openlabs order overview pre-commit problem pull push repository request require required rest satisfied send services session sh steps test tryton turn urltryton usage working"
+    },
+    {
+      "section": "api",
       "id": "openlabs.angular-tryton.service:session",
       "shortName": "session",
       "type": "service",
@@ -35,7 +44,7 @@ NG_DOCS={
     "api": true
   },
   "html5Mode": false,
-  "startPage": "/api",
+  "startPage": "/api/openlabs.angular-tryton",
   "scripts": [
     "angular.min.js",
     "tryton.js",
