@@ -79,6 +79,18 @@ describe('angular-tryton', function() {
 
       $httpBackend.flush(); // flush requests
     });
+
+    it('should be possible to change the server base url', function() {
+      $httpBackend.expectPOST(
+        'http://erp.openlabs.us/',
+        {"method":"hello.world","params":[]})
+        .respond(200, {id: 0, result: "Hello World"});
+
+      tryton.setServerUrl('http://erp.openlabs.us/');
+      tryton.rpc('hello.world');
+
+      $httpBackend.flush(); // flush requests
+    });
     
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
@@ -186,11 +198,12 @@ describe('angular-tryton', function() {
 
   // Test the session functionality
   describe('session', function() {
-    var $httpBackend, tryton, session, $cookieStore;
+    var $httpBackend, tryton, session, $localStorage, $sessionStorage;
 
-    beforeEach(inject(function(_$httpBackend_, _$cookieStore_, _tryton_, _session_) {
+    beforeEach(inject(function(_$httpBackend_, _$localStorage_, _$sessionStorage_, _tryton_, _session_) {
       $httpBackend = _$httpBackend_;
-      $cookieStore = _$cookieStore_;
+      $localStorage = _$localStorage_;
+      $sessionStorage = _$sessionStorage_;
       tryton = _tryton_;
       session = _session_;
     }));
@@ -208,6 +221,7 @@ describe('angular-tryton', function() {
 
       session.doLogin('database', 'admin', 'admin').success(function(result) {
         expect(result).toEqual([1, 'session']);
+        expect(session.isLoggedIn()).toBe(true);
         session.rpc('test', ['hello']);
       });
       $httpBackend.flush(); // flush requests
@@ -232,23 +246,62 @@ describe('angular-tryton', function() {
         ).respond(200, {id: 0, result: 'ok'});
 
       session.setSession('database', 'admin', 1, 'session');
-      expect($cookieStore.get('sessionId')).toBe('session');
-      expect($cookieStore.get('userId')).toBe(1);
-      expect($cookieStore.get('database')).toBe('database');
-      expect($cookieStore.get('login')).toBe('admin');
+      expect($sessionStorage.sessionId).toBe('session');
+      expect($localStorage.userId).toBe(1);
+      expect($localStorage.database).toBe('database');
+      expect($localStorage.login).toBe('admin');
 
       spyOn(session, 'doLogout').andCallThrough();
       session.doLogout();
 
-      expect($cookieStore.get('sessionId')).toBeUndefined();
-      expect($cookieStore.get('userId')).toBeUndefined();
+      expect($localStorage.sessionId).toBeUndefined();
+      expect($localStorage.userId).toBeUndefined();
 
       $httpBackend.flush(); // flush requests
+    });
+
+    it('set default session in context', function() {
+      session.setDefaultContext({'user': 1});
+      expect(angular.toJson($sessionStorage.context)).toBe(angular.toJson({'user': 1}));
     });
 
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
+    });
+
+  });
+
+  describe('Filter: urlTryton', function () {
+
+    var $httpBackend, tryton, session, $localStorage, urlTryton;
+
+    beforeEach(inject(function(_$httpBackend_, _$localStorage_, $filter, _tryton_, _session_) {
+      $httpBackend = _$httpBackend_;
+      $localStorage = _$localStorage_;
+      tryton = _tryton_;
+      session = _session_;
+      urlTryton = $filter('urlTryton');
+    }));
+
+    it('should map url from localhost', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party$/);
+      expect(urlTryton('party.party', 2)).toMatch(/^tryton:\/\/localhost:\d+\/database\/model\/party\.party\/2$/);
+      expect(urlTryton('party.party', 2, 'wizard')).toMatch(/^tryton:\/\/localhost:\d+\/database\/wizard\/party\.party\/2$/);
+    });
+
+    it('should map url from remote', function () {
+      tryton.setServerUrl('http://tryton.openlabs.us/');
+      session.setSession('database', 'admin', 1, 'session');
+      expect(urlTryton('party.party')).toMatch(/^tryton:\/\/tryton\.openlabs\.us\/database\/model\/party\.party$/);
+    });
+
+    it('should not return url', function () {
+      session.setSession('database', 'admin', 1, 'session');
+      expect(function () {
+        urlTryton();
+      }).toThrow(new Error("Name in urlTryton filter is required."));
     });
 
   });
