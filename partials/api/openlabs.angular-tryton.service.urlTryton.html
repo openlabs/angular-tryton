@@ -1,0 +1,30 @@
+<h1><code ng:non-bindable="">urlTryton</code>
+<div><span class="hint">filter in module <code ng:non-bindable="">openlabs.angular-tryton</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-urltryton-page"><p>Create a tryton scheme URL which can be opened with the URL handlers of
+the operating system. This is useful if you want to cross link to records
+or windows that you need to open on the tryton client from your web
+application.</p>
+<p>Example:</p>
+<pre><code class="lang-html">&lt;a href=&quot;{{ &#39;party.party&#39;|urlTryton:party.id }}&quot;&gt;
+ Click here to open Party:{{ party.name }} in your tryton client
+&lt;/a&gt;</code></pre>
+</div></div>
+<h2 id="usage">Usage</h2>
+<div class="usage"><h3 id="usage_in-html-template-binding">In HTML Template Binding</h3>
+<div class="in-html-template-binding"><code ng:non-bindable=""><span>{{</span> urlTryton_expression | urlTryton:id:type <span>}}</span></code>
+</div>
+<h3 id="usage_in-javascript">In JavaScript</h3>
+<div class="in-javascript"><code ng:non-bindable="">$filter('urlTryton')(name, id, type)</code>
+</div>
+<h4 id="usage_in-javascript_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>name</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-urltryton-page"><p>Name of the resource (model/wizard/report).
+Ex: <code>party.party</code></p>
+</div></td></tr><tr><td>id</td><td><a href="" class="label type-hint type-hint-integer">integer</a></td><td><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-urltryton-page"><p>Optional id of the record. Leaving this empty
+would trigger a list view on tryton</p>
+</div> <p><em>(default: null)</em></p></td></tr><tr><td>type</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-urltryton-page"><p>Type of the resource identified by name. It
+could be <code>&#39;model&#39;</code>, <code>&#39;wizard&#39;</code> or <code>&#39;report&#39;</code>.</p>
+</div> <p><em>(default: 'model')</em></p></td></tr></tbody></table></div>
+</div>

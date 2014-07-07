@@ -1,0 +1,102 @@
+<h1><code ng:non-bindable="">session</code>
+<div><span class="hint">service in module <code ng:non-bindable="">openlabs.angular-tryton</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-session-page"><p>High level service to invoke <code>tryton</code> service.</p>
+<p>While this method exposes the implementation of the RPC client, this is
+required only when you have to call a common service (eg. getting server
+version) or authenticating. The <code>rpc</code> method takes parameters which should
+include the user ID and session.</p>
+<p>The <code>session</code> service provides a higher level abstraction which offers an
+RPC client that automatically handles authentication and context for you.</p>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_dologin">doLogin()</h3>
+<div class="dologin"><div class="dologin-page"><p>Login to the given <code>database</code> using <code>username</code> and <code>password</code>.
+If the login is successful, the method calls <code>session.setSession</code> and
+saves the session token which can be used for subsequent requests made
+through <code>session.rpc</code>.</p>
+</div><h5 id="methods_dologin_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">Promise</a></td><td><div class="dologin-page"><p>Promise that will be resolved on successful response.</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_dologout">doLogout()</h3>
+<div class="dologout"><div class="dologout-page"><p>Log the current user out and clear out the session.</p>
+</div><h5 id="methods_dologout_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">Promise</a></td><td><div class="dologout-page"><p>Promise that will be resolved on successful response.</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_isloggedin">isLoggedIn()</h3>
+<div class="isloggedin"><div class="isloggedin-page"><p>Check if the user is logged in.</p>
+<p><strong>Note:</strong> This method does not guarantee that the session is still valid.
+It only ensures that the user logged in once.</p>
+</div><h5 id="methods_isloggedin_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-bool">bool</a></td><td><div class="isloggedin-page"><p><code>true</code> or <code>false</code></p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_rpc">rpc(method, params, context)</h3>
+<div class="rpc"><div class="rpc-page"><p>Make remote procedure call on the given <code>method</code> with the <code>params</code> and
+optional <code>context</code>. This is a convenience wrapper over <code>tryton.rpc</code>. It
+automatically constructs the parameters as required by <code>tryton.rpc</code> (with
+userID, session and the context).</p>
+<p>Example:</p>
+<pre><code class="lang-js">session.rpc(
+  &#39;party.party.read&#39;,   // method
+  [[1, 2], [&#39;name&#39;]],   // params: ids, field_names
+  {company: 1}          // context
+)</code></pre>
+<p>Equivalent Python:</p>
+<pre><code class="lang-python">with Transaction().set_context(company=1):
+  Party.read([1, 2], [&#39;name&#39;])</code></pre>
+</div><h5 id="methods_rpc_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="rpc-page"><p>Name of the RPC method that need to be called
+(Ex. <code>&#39;party.party.read&#39;</code>).</p>
+</div></td></tr><tr><td>params</td><td><a href="" class="label type-hint type-hint-array">array</a></td><td><div class="rpc-page"><p>Parameters to be passed to the method.
+Unlike, <code>tryton.rpc</code> you do not have to pass the
+userID, session or the context. They are automatically
+constructed, before being passed to <code>tryton.rpc</code>.
+(Ex. <code>[[1, 2], [&#39;name&#39;]]</code>)</p>
+</div></td></tr><tr><td>context</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="rpc-page"><p>A javascript object with any additional context that
+needs to be set. The context is merged with the
+default context in the server. The default context
+is the context returned by the get_preferences
+method.
+Note: JavaScript object should be JSON serializable.
+(Ex: <code>{company: 1}</code>)</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><h3 id="methods_setsession">setSession(database, login, userId, sessionId)</h3>
+<div class="setsession"><div class="setsession-page"><p>Set the user and session ID and also save them to localStorage for
+retrieval. Set null if value is undefined; happens when user attempts to
+log in to incompatible database.</p>
+<p><strong>Note:</strong> This method need not be explicitly called as <code>session.doLogin</code>
+automatically calls this method on successful login.</p>
+</div><h5 id="methods_setsession_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>database</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="setsession-page"><p>Tryton database on which this request need
+to be processed.</p>
+</div> <p><em>(default: null)</em></p></td></tr><tr><td>login</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="setsession-page"><p>The login/username used to connect to tryton.</p>
+</div></td></tr><tr><td>userId</td><td><a href="" class="label type-hint type-hint-integer">integer</a></td><td><div class="setsession-page"><p>The UserId of currently logged in user.</p>
+</div></td></tr><tr><td>sessionId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="setsession-page"><p>The Session ID of the current session (issued by
+tryton server).</p>
+</div></td></tr></tbody></table></div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="properties">Properties</h2>
+<ul class="properties"><li><h3 id="properties_database">database</h3>
+<div class="database"><div class="database-page"><p>The database to which this session connects to</p>
+</div></div>
+</li>
+<li><h3 id="properties_login">login</h3>
+<div class="login"><div class="login-page"><p>The login/username used to connect to tryton. This has to be remembered
+for just asking for the password when a session times out.</p>
+</div></div>
+</li>
+<li><h3 id="properties_sessionid">sessionId</h3>
+<div class="sessionid"><div class="sessionid-page"><p>The Session ID of the current session (issued by tryton server)</p>
+</div></div>
+</li>
+<li><h3 id="properties_userid">userId</h3>
+<div class="userid"><div class="userid-page"><p>The Integer ID of the currently logged in User</p>
+</div></div>
+</li>
+</ul>
+</div>
+</div>

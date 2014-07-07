@@ -1,0 +1,217 @@
+<h1><code ng:non-bindable="">tryton</code>
+<div><span class="hint">service in module <code ng:non-bindable="">openlabs.angular-tryton</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="openlabs-angular-tryton-service-page openlabs-angular-tryton-service-tryton-page"><p>Low level service to invoke RPC on a tryton server.</p>
+<p>While this method exposes the implementation of the RPC client, this is
+required only when you have to call a common service (eg. getting server
+version) or authenticating. The <code>rpc</code> method takes parameters which should
+include the user ID and session.</p>
+<p>The <code>session</code> service provides a higher level abstraction which offers an
+RPC client that automatically handles authentication and context for you.</p>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_getserverversion">getServerVersion()</h3>
+<div class="getserverversion"><div class="getserverversion-page"><p>Convenience wrapper to fetch server version.</p>
+</div><h5 id="methods_getserverversion_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">Promise</a></td><td><div class="getserverversion-page"><p>Promise that will be resolved on successful response.</p>
+</div></td></tr></table><h4 id="methods_getserverversion_example">Example</h4>
+<div class="example"><div class="getserverversion-page"><h6 id="methods_getserverversion_example_source">Source</h6>
+<div source-edit="example" source-edit-deps="angular.js app.js" source-edit-html="index.html-0" source-edit-css="" source-edit-js="app.js" source-edit-json="" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-0" ng-html-wrap-loaded="example angular.js app.js"></pre>
+<script type="text/ng-template" id="index.html-0">
+ <div ng-controller="TrytonCtrl">
+   <span ng-init="getServerVersion()">
+     Server Version: {{ serverVersion }}
+   </span>
+ </div>
+</script>
+</div>
+<div class="tab-pane" title="app.js">
+<pre class="prettyprint linenums" ng-set-text="app.js"></pre>
+<script type="text/ng-template" id="app.js">
+   angular.module('example', [
+     'openlabs.angular-tryton'
+   ])
+   .controller('TrytonCtrl', [
+     '$scope',
+     'tryton',
+     function ($scope, tryton) {
+       tryton.serverUrl = '/';
+       $scope.getServerVersion = function () {
+         // Call Tryton JsonRPC server and return promise.
+         tryton.getServerVersion()
+           .success(function (result) {
+             // Do something with result
+             $scope.serverVersion = result;
+           });
+       }
+     }
+   ]);
+</script>
+</div>
+</div><h6 id="methods_getserverversion_example_demo">Demo</h6>
+<div class="well doc-example-live animate-container" ng-embed-app="example" ng-set-html="index.html-0" ng-eval-javascript="app.js"></div>
+</div></div>
+</div>
+</li>
+<li><h3 id="methods_rpc">rpc(method, params, database)</h3>
+<div class="rpc"><div class="rpc-page"><p>The lowest level RPC client which invokes the <code>method</code> with the
+provided <code>params</code> and optionally a database.</p>
+</div><h5 id="methods_rpc_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="rpc-page"><p>An RPC method that need to be called.</p>
+</div></td></tr><tr><td>params</td><td><a href="" class="label type-hint type-hint-array">array</a></td><td><div class="rpc-page"><p>Parameters to be passed to the <code>method</code> including the
+user ID and session key. If you are looking for this
+to be automatically handled, look at <code>session.rpc</code>
+instead.</p>
+</div></td></tr><tr><td>database</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="rpc-page"><p>Tryton database on which this request need to
+be processed. Leave empty for calls that do
+not need a database (Ex. getVersion).</p>
+</div> <p><em>(default: "")</em></p></td></tr></tbody></table><h5 id="methods_rpc_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">Promise</a></td><td><div class="rpc-page"><p>Promise that will be resolved when the success response
+come from server.</p>
+</div></td></tr></table><h4 id="methods_rpc_example">Example</h4>
+<div class="example"><div class="rpc-page"><h6 id="methods_rpc_example_source">Source</h6>
+<div source-edit="example" source-edit-deps="angular.js app.js" source-edit-html="index.html" source-edit-css="" source-edit-js="app.js" source-edit-json="" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html" ng-html-wrap-loaded="example angular.js app.js"></pre>
+<script type="text/ng-template" id="index.html">
+ <div ng-controller="TrytonCtrl">
+   <span ng-init="getServerVersion()">
+     Server Version: {{ serverVersion }}
+   </span>
+ </div>
+</script>
+</div>
+<div class="tab-pane" title="app.js">
+<pre class="prettyprint linenums" ng-set-text="app.js"></pre>
+<script type="text/ng-template" id="app.js">
+  angular.module('example', [
+    'openlabs.angular-tryton'
+  ])
+  .controller('TrytonCtrl', [
+    '$scope',
+    'tryton',
+    function ($scope, tryton) {
+      tryton.serverUrl = '/';
+      $scope.getServerVersion = function () {
+        // Call Tryton JsonRPC server and return promise.
+        tryton.rpc('common.version', [null, null])
+          .success(function (result) {
+            // Do something with result
+            $scope.serverVersion = result;
+          });
+      }
+    }
+  ]);
+</script>
+</div>
+</div><h6 id="methods_rpc_example_demo">Demo</h6>
+<div class="well doc-example-live animate-container" ng-embed-app="example" ng-set-html="index.html" ng-eval-javascript="app.js"></div>
+</div></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="properties">Properties</h2>
+<ul class="properties"><li><h3 id="properties_serverurl">serverUrl</h3>
+<div class="serverurl"><div class="serverurl-page"><p>Stores the URL of the RPC server to which the connection has to be
+made.</p>
+</div></div>
+</li>
+</ul>
+</div>
+<div class="member event"><h2 id="events">Events</h2>
+<ul class="events"><li><h3 id="events_concurrencyexception">ConcurrencyException</h3>
+<div class="concurrencyexception"><div class="tryton-page tryton-concurrencyexception-page"><p><strong>tryton:ConcurrencyException</strong></p>
+<p>Exception raised when there is a concurrency exception reported
+by the optimistic lock. Your application depending on how complex
+you want it to be could decide to handle this and ask the user
+to compare or confirm the overwrite. This exception is usually
+seen when some other user has already updated the record after it
+was loaded by the current user (based on timestamp).</p>
+<p>Example:</p>
+<pre><code class="lang-js">$rootScope.$on(&#39;tryton:ConcurrencyException&#39;, function(error){
+  // do something
+})</code></pre>
+</div><div class="inline"><h4 id="events_concurrencyexception_type">Type:</h4>
+<div class="type">broadcast</div>
+</div>
+<div class="inline"><h4 id="events_concurrencyexception_target">Target:</h4>
+<div class="target">root scope</div>
+</div>
+</div>
+</li>
+<li><h3 id="events_exception">Exception</h3>
+<div class="exception"><div class="tryton-page tryton-exception-page"><p><strong>tryton:Exception</strong></p>
+<p>An exception that was not one of the handled types. Usually an
+error model and a stack trace are returned. which is passed as
+such in the broadcast.</p>
+<p>Example:</p>
+<pre><code class="lang-js">$rootScope.$on(&#39;tryton:Exception&#39;, function(error){
+  // do something
+})</code></pre>
+</div><div class="inline"><h4 id="events_exception_type">Type:</h4>
+<div class="type">broadcast</div>
+</div>
+<div class="inline"><h4 id="events_exception_target">Target:</h4>
+<div class="target">root scope</div>
+</div>
+</div>
+</li>
+<li><h3 id="events_notlogged">NotLogged</h3>
+<div class="notlogged"><div class="tryton-page tryton-notlogged-page"><p><strong>tryton:NotLogged</strong></p>
+<p>Raised when the current session token is expired or invalid.
+Depending on the application, it could decide to logoff the user
+or show a lock screen and ask for the password again to refresh
+the login by calling <code>session.doLogin</code>.</p>
+<p>Example:</p>
+<pre><code class="lang-js">$rootScope.$on(&#39;tryton:NotLogged&#39;, function(){
+  // do something
+})</code></pre>
+</div><div class="inline"><h4 id="events_notlogged_type">Type:</h4>
+<div class="type">broadcast</div>
+</div>
+<div class="inline"><h4 id="events_notlogged_target">Target:</h4>
+<div class="target">root scope</div>
+</div>
+</div>
+</li>
+<li><h3 id="events_usererror">UserError</h3>
+<div class="usererror"><div class="tryton-page tryton-usererror-page"><p><strong>tryton:UserError</strong></p>
+<p>Raised when an error occurs on processing the request and tryton
+handled it. UserErrors are usually known exception like invalid
+data or not meeting the requirements.</p>
+<p>Example:</p>
+<pre><code class="lang-js">$rootScope.$on(&#39;tryton:UserError&#39;, function(message, description){
+  // do something
+})</code></pre>
+</div><div class="inline"><h4 id="events_usererror_type">Type:</h4>
+<div class="type">broadcast</div>
+</div>
+<div class="inline"><h4 id="events_usererror_target">Target:</h4>
+<div class="target">root scope</div>
+</div>
+</div>
+</li>
+<li><h3 id="events_userwarning">UserWarning</h3>
+<div class="userwarning"><div class="tryton-page tryton-userwarning-page"><p><strong>tryton:UserWarning</strong></p>
+<p>Raised when a warning message needs to be showed to the user.
+The <code>name</code> can be used to suppress this warning from being shown
+in the future. This should be handled by the application logic
+and ng-tryton will not handle it.</p>
+<p>Example:</p>
+<pre><code class="lang-js">$rootScope.$on(&#39;tryton:UserWarning&#39;, function(name, message, description){
+  // do something
+})</code></pre>
+</div><div class="inline"><h4 id="events_userwarning_type">Type:</h4>
+<div class="type">broadcast</div>
+</div>
+<div class="inline"><h4 id="events_userwarning_target">Target:</h4>
+<div class="target">root scope</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
