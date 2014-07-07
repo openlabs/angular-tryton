@@ -61,13 +61,12 @@ into a commit (or two) in easy steps:
 Authors and Contributors
 ------------------------
 
-This module was built at `Openlabs <http://www.openlabs.co.in>`_. 
+This module was built at [Openlabs](http://www.openlabs.co.in). 
 
 
 Professional Support
 --------------------
 
-This module is professionally supported by `Openlabs <http://www.openlabs.co.in>`_.
+This module is professionally supported by [Openlabs](http://www.openlabs.co.in).
 If you are looking for on-site teaching or consulting support, contact our
-`sales <mailto:sales@openlabs.co.in>`_ and `support
-<mailto:support@openlabs.co.in>`_ teams.
+[sales](mailto:sales@openlabs.co.in) and [support](mailto:support@openlabs.co.in) teams.
