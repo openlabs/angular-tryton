@@ -5,6 +5,13 @@ Angular Tryton
 
 An [AngularJS](https://github.com/angular/angular.js) module that makes tryton JSONRPC working in the *Angular Way*. Contains two services `tryton`, `session` and one filter `urlTryton`.
 
+
+Documentation
+-------------
+
+Documentation is auto generated from the code using `grunt ngdocs`.
+Hosted version of the documentation can be seen at [openlabs.github.io/angular-tryton](http://openlabs.github.io/angular-tryton/)
+
 Install
 =======
 
@@ -40,8 +47,3 @@ If you're still convinced that angular-tryton needs to be modified in order to h
 3. Modify code as required.
 
 2. Once you're satisfied with the changes and you want the rest of the Angular Tryton developers to take a look at them, push your changes back to your own repository and send us a Pull request to develop branch. Don't forget to add test with minimum 100% test coverage.
-
-
-TODO
-----
-* Elaborate documentation for services and filter.
