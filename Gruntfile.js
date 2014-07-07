@@ -96,6 +96,7 @@ module.exports = function(grunt) {
       },
       ngdocs: {
         options: {
+          startPage: '/api/openlabs.angular-tryton',
           image: "example/images/ng-tryton-logo.png",
           scripts: [
             'angular.js',
