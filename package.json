@@ -9,13 +9,14 @@
     "express": "~3.4.4",
     "grunt": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.5",
     "grunt-contrib-jshint": "~0.7.0",
-    "karma-jasmine": "~0.1.5",
-    "phantomjs": "~1.9.7-6",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-karma": "~0.8.3",
+    "grunt-ngdocs": "^0.2.2",
     "karma-coverage": "~0.2.2",
+    "karma-jasmine": "~0.1.5",
     "karma-phantomjs-launcher": "~0.1.4",
-    "grunt-karma": "~0.8.3"
+    "phantomjs": "~1.9.7-6"
   },
   "scripts": {
     "test": "karma run test/karma.conf.js"
