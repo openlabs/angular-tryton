@@ -1,6 +1,8 @@
 Angular Tryton
 ==============
 
+![](example/images/ng-tryton-logo.png)
+
 An [AngularJS](https://github.com/angular/angular.js) module that makes tryton JSONRPC working in the *Angular Way*. Contains two services `tryton`, `session` and one filter `urlTryton`.
 
 Install
