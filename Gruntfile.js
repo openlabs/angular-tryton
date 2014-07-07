@@ -96,6 +96,7 @@ module.exports = function(grunt) {
       },
       ngdocs: {
         options: {
+          image: "example/images/ng-tryton-logo.png",
           scripts: [
             'angular.js',
             'src/tryton.js',
