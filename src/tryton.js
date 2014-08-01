@@ -236,7 +236,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
  * RPC client that automatically handles authentication and context for you.
  *
  */
-.service('tryton', ['$http', function ($http) {
+.service('tryton', ['$http', '$rootScope', '$localStorage', function ($http, $rootScope, $localStorage) {
   var tryton = this;
 
   /**
@@ -248,7 +248,10 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
       Stores the URL of the RPC server to which the connection has to be
       made.
   **/
-  this.serverUrl = '/';
+  this.serverUrl = $localStorage.serverUrl || '/';
+  $rootScope.$watch(function () { return tryton.serverUrl; }, function (url) {
+    $localStorage.serverUrl = url;
+  });
 
   // Change this URL using setServerUrl
   this.setServerUrl = function(url) {
