@@ -432,7 +432,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
 
   // The context object of the session. This is the default context from the
   // preferences of the logged in user.
-  var context = null;
+  session.context = null;
 
   var loadAllFromCookies = function() {
     // Load the values of the variables from the cookiestore.
@@ -440,7 +440,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     session.sessionId = $sessionStorage.sessionId;
     session.database = $localStorage.database;
     session.login = $localStorage.login;
-    context = $sessionStorage.context;
+    session.context = $sessionStorage.context;
   };
 
   // Since the service is a singleton, on the first run just load whatever
@@ -451,7 +451,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     // Clear the session for a brand new connection
     session.userId = null;
     session.sessionId = null;
-    context = null;
+    session.context = null;
 
     // Now remove the values from the cookie store
     delete $localStorage.userId;
@@ -542,7 +542,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     // Construct parameters: [userId, sessionId, param1, param2,... context]
     var params = [session.userId, session.sessionId].concat((_params || []));
 
-    var requestContext = angular.copy((context || {}));
+    var requestContext = angular.copy((session.context || {}));
     if (_context !== undefined) {
       angular.extend(requestContext, _context);
     }
