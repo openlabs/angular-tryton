@@ -208,6 +208,12 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
   // result object
   var trytonResponseTransformer = function(response, headerGetter) {
     if (response.hasOwnProperty('result')) {
+      angular.forEach(response.result, function(value, key) {
+        var field = response.result[key];
+        if(field && field.hasOwnProperty('__class__') && field['__class__']==='buffer') {
+          response.result[key] = field.base64;
+        }
+      });
       return response.result;
     } else if (response.hasOwnProperty('error')) {
       var error = response.error;
