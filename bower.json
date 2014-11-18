@@ -1,10 +1,12 @@
 {
   "name": "angular-tryton",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
-    "Sharoon Thomas <sharoon.thomas@openlabs.co.in>"
+    "Sharoon Thomas <sharoon.thomas@openlabs.co.in>",
+    "Tarun Bhardwaj <tarun.bhardwaj@openlabs.co.in>"
   ],
   "description": "AngularJS Tryton RPC Client Service",
+  "main": "./src/tryton.min.js",
   "keywords": [
     "angular",
     "Tryton"
