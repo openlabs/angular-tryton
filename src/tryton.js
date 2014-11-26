@@ -440,7 +440,18 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
   // preferences of the logged in user.
   session.context = null;
 
-  var loadAllFromCookies = function() {
+  /**
+    @ngdoc method
+    @name loadAllFromStorage
+    @methodOf openlabs.angular-tryton.service:session
+
+    @description
+      Sets session properties from sessionStorage and localStorage.
+
+      To be prcise, loads sessionId and context from sessionStorage and userId,
+      login, database from localStorage.
+  **/
+  session.loadAllFromStorage = function() {
     // Load the values of the variables from the cookiestore.
     session.userId = $localStorage.userId;
     session.sessionId = $sessionStorage.sessionId;
@@ -451,7 +462,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
 
   // Since the service is a singleton, on the first run just load whatever
   // is already in the session.
-  loadAllFromCookies();
+  session.loadAllFromStorage();
 
   var clearSession = function() {
     // Clear the session for a brand new connection
@@ -491,9 +502,9 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     $localStorage.userId = _userId || null;
     $sessionStorage.sessionId = _sessionId || null;
 
-    // Now that everything is stored to cookies, reuse the loadAllFromCookies
+    // Now that everything is stored to localStorage/sessionStorage, reuse the loadAllFromStorage
     // method to load values into variables here.
-    loadAllFromCookies();
+    session.loadAllFromStorage();
   };
 
 
@@ -576,7 +587,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
 
   this.setDefaultContext = function (_context) {
     $sessionStorage.context = _context || null;
-    loadAllFromCookies();
+    session.loadAllFromStorage();
   };
 
   /**
