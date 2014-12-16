@@ -86,7 +86,7 @@ describe('angular-tryton', function() {
         {"method":"hello.world","params":[]})
         .respond(200, {id: 0, result: "Hello World"});
 
-      tryton.setServerUrl('http://erp.openlabs.us/');
+      tryton.serverUrl = 'http://erp.openlabs.us/';
       tryton.rpc('hello.world');
 
       $httpBackend.flush(); // flush requests
@@ -292,8 +292,8 @@ describe('angular-tryton', function() {
     });
 
     it('should map url from remote', function () {
-      tryton.setServerUrl('http://tryton.openlabs.us/');
       session.setSession('database', 'admin', 1, 'session');
+      tryton.serverUrl = 'http://tryton.openlabs.us/';
       expect(urlTryton('party.party')).toMatch(/^tryton:\/\/tryton\.openlabs\.us\/database\/model\/party\.party$/);
     });
 
