@@ -458,6 +458,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     session.database = $localStorage.database;
     session.login = $localStorage.login;
     session.context = $sessionStorage.context;
+    tryton.serverUrl = $localStorage.serverUrl || '/';
   };
 
   // Since the service is a singleton, on the first run just load whatever
