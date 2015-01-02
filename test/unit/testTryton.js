@@ -265,6 +265,26 @@ describe('angular-tryton', function() {
       expect(angular.toJson($sessionStorage.context)).toBe(angular.toJson({'user': 1}));
     });
 
+    it('should make sure user logs in even if they don\'t put protocol and end url with a trailing forward slash in serverUrl', function() {
+      tryton.setServerUrl('localhost:8000');
+      $httpBackend.expectPOST(
+        'https://localhost:8000/database', {"method":"common.login","params":['admin','admin']}
+        ).respond(200, {id: 0, result: [1, 'session']});
+      // Expect a second request with the id and session
+      $httpBackend.expectPOST(
+        'https://localhost:8000/database', {"method":"test","params":[1, 'session', 'hello', {}]}
+        ).respond(200, {id: 0, result: 'world'});
+
+      session.doLogin('database', 'admin', 'admin').success(function(result) {
+        expect(result).toEqual([1, 'session']);
+        expect(tryton.serverUrl).toEqual('https://localhost:8000/');
+        expect(session.isLoggedIn()).toBe(true);
+        session.rpc('test', ['hello']);
+      });
+      $httpBackend.flush(); // flush requests
+    });
+
+
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
@@ -292,8 +312,8 @@ describe('angular-tryton', function() {
     });
 
     it('should map url from remote', function () {
-      tryton.setServerUrl('http://tryton.openlabs.us/');
       session.setSession('database', 'admin', 1, 'session');
+      tryton.setServerUrl('http://tryton.openlabs.us/');
       expect(urlTryton('party.party')).toMatch(/^tryton:\/\/tryton\.openlabs\.us\/database\/model\/party\.party$/);
     });
 

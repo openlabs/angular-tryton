@@ -255,14 +255,9 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
       made.
   **/
   this.serverUrl = $localStorage.serverUrl || '/';
-  $rootScope.$watch(function () { return tryton.serverUrl; }, function (url) {
-    $localStorage.serverUrl = url;
-  });
 
-  // Change this URL using setServerUrl
   this.setServerUrl = function(url) {
-    console.warn('Method tryton.setServerUrl() will be depreciated in next version.');
-    tryton.serverUrl = url;
+    tryton.serverUrl = $localStorage.serverUrl = url + (url.slice(-1)==='/' ? '' : '/');
   };
 
   /**
@@ -390,7 +385,7 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
  * RPC client that automatically handles authentication and context for you.
  *
  */
-.service('session', ['tryton', '$localStorage', '$sessionStorage', function(tryton, $localStorage, $sessionStorage) {
+.service('session', ['tryton', '$localStorage', '$sessionStorage', '$q', function(tryton, $localStorage, $sessionStorage, $q) {
   // Controller for managing tryton session
 
   var session = this;
@@ -440,18 +435,30 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
   // preferences of the logged in user.
   session.context = null;
 
-  var loadAllFromCookies = function() {
+  /**
+    @ngdoc method
+    @name loadAllFromStorage
+    @methodOf openlabs.angular-tryton.service:session
+
+    @description
+      Sets session properties from sessionStorage and localStorage.
+
+      To be prcise, loads sessionId and context from sessionStorage and userId,
+      login, database from localStorage.
+  **/
+  session.loadAllFromStorage = function() {
     // Load the values of the variables from the cookiestore.
     session.userId = $localStorage.userId;
     session.sessionId = $sessionStorage.sessionId;
     session.database = $localStorage.database;
     session.login = $localStorage.login;
     session.context = $sessionStorage.context;
+    tryton.serverUrl = $localStorage.serverUrl || '/';
   };
 
   // Since the service is a singleton, on the first run just load whatever
   // is already in the session.
-  loadAllFromCookies();
+  session.loadAllFromStorage();
 
   var clearSession = function() {
     // Clear the session for a brand new connection
@@ -491,9 +498,9 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     $localStorage.userId = _userId || null;
     $sessionStorage.sessionId = _sessionId || null;
 
-    // Now that everything is stored to cookies, reuse the loadAllFromCookies
+    // Now that everything is stored to localStorage/sessionStorage, reuse the loadAllFromStorage
     // method to load values into variables here.
-    loadAllFromCookies();
+    session.loadAllFromStorage();
   };
 
 
@@ -576,7 +583,21 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
 
   this.setDefaultContext = function (_context) {
     $sessionStorage.context = _context || null;
-    loadAllFromCookies();
+    session.loadAllFromStorage();
+  };
+
+  var _tryLogin = function(_database, _username, _password) {
+    // call login on tryton server and if the login is succesful set the
+    // userId and session
+    var promise = tryton.rpc( 'common.login', [_username, _password], _database
+    ).success(function(result) {
+      // Since trytond returns an Array with userId and sessionId on successful
+      // login and an error Object on error; false if bad credentials.
+      if (result instanceof Array) {
+        session.setSession(_database, _username, result[0], result[1]);
+      }
+    });
+    return promise;
   };
 
   /**
@@ -593,17 +614,49 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
     @returns {Promise} Promise that will be resolved on successful response.
   **/
   this.doLogin = function(_database, _username, _password) {
-    // call login on tryton server and if the login is succesful set the
-    // userId and session
-    var promise = tryton.rpc(
-      'common.login', [_username, _password], _database
-    ).success(function(result) {
-      // Since trytond returns an Array with userId and sessionId on successful
-      // login and an error Object on error; false if bad credentials.
-      if (result instanceof Array) {
-        session.setSession(_database, _username, result[0], result[1]);
-      }
-    });
+    var urlRegex = /^https?:\/\//i;
+    // Make sure URL has http or https in it.
+    if(urlRegex.test(tryton.serverUrl) || tryton.serverUrl === '/') {
+      return _tryLogin(_database, _username, _password);
+    }
+    tryton.setServerUrl('https://' + tryton.serverUrl);
+    var deferred = $q.defer();
+    var promise = deferred.promise;
+    _tryLogin(_database, _username, _password)
+      .success(function(result){
+        deferred.resolve(result);
+      })
+      .error(function(reason){
+        if(!reason) {
+          // Couldn't login, try again with http.
+          tryton.setServerUrl(
+            tryton.serverUrl.replace(/^https/i, 'http')
+          );
+          _tryLogin(_database, _username, _password)
+            .success(function(result){
+              deferred.resolve(result);
+            })
+            .error(function(reason){
+              deferred.reject(reason);
+            });
+        } else {
+          deferred.reject(reason);
+        }
+      });
+
+    promise.success = function(fn) {
+      promise.then(function(response) {
+        fn(response);
+      });
+      return promise;
+    };
+
+    promise.error = function(fn) {
+      promise.then(null, function(response) {
+        fn(response);
+      });
+      return promise;
+    };
     return promise;
   };
 
