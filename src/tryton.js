@@ -198,11 +198,12 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
       // and create the necessary signals
       return $q.reject(response);
     }
-    return function(promise) {
-      return promise.then(success, error);
+    return {
+      response: success,
+      responseError: error
     };
   }];
-  $httpProvider.responseInterceptors.push(trytonResponseInterceptor);
+  $httpProvider.interceptors.push(trytonResponseInterceptor);
 
   // Transform the return value by sending the result instead of the ID and
   // result object
