@@ -3,7 +3,8 @@
   "version": "0.2.0",
   "authors": [
     "Sharoon Thomas <sharoon.thomas@openlabs.co.in>",
-    "Tarun Bhardwaj <tarun.bhardwaj@openlabs.co.in>"
+    "Tarun Bhardwaj <tarun.bhardwaj@openlabs.co.in>",
+    "Gaurav Butola <gaurav.butola@openlabs.co.in>"
   ],
   "description": "AngularJS Tryton RPC Client Service",
   "main": "./src/tryton.min.js",
