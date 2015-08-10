@@ -217,10 +217,10 @@ angular.module('openlabs.angular-tryton', ['ngStorage'])
                 response.result[recordKey][fieldKey] = field.decimal;
                 break;
               case 'datetime':
-                response.result[recordKey][fieldKey] = new Date(field.year, field.month - 1, field.day,
+                response.result[recordKey][fieldKey] = new Date(Date.UTC(field.year, field.month - 1, field.day,
                                                                 field.hour, field.minute,
                                                                 field.second, field.microsecond/1000
-                                                               ).toUTCString();
+                                                               )).toUTCString();
                 break;
               case 'date':
                 // Get dateFormat from user preferences otherwise show in ISO format.
